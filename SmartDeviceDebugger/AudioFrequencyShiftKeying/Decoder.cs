@@ -26,14 +26,11 @@ namespace SmartDevice.AudioFrequencyShiftKeying
 				throw new ArgumentException(@"The requested device ID could not be found.", nameof(deviceID));
 			}
 
-			var waveFormat = new WaveFormat(48000, 16, 2);
+			var waveFormat = new WaveFormat(SampleFrequency, 16, 2);
 			if (!_captureDevice.AudioClient.IsFormatSupported(AudioClientShareMode.Exclusive, waveFormat))
 			{
 				throw new ArgumentException(@"The requested device does not support the required stream format.", nameof(deviceID));
 			}
-
-			_halfSpaceSamples = waveFormat.SampleRate / 4000 / 2;
-			_halfMarkSamples = waveFormat.SampleRate / 2000 / 2;
 
 			_sampleCount = 0;
 			_previousSample = 0;
@@ -90,11 +87,11 @@ namespace SmartDevice.AudioFrequencyShiftKeying
 		{
 			CycleType cycleType;
 
-			if (MatchTolerance(samples, _halfSpaceSamples, Tolerance))
+			if (MatchSpace(samples))
 			{
 				cycleType = CycleType.Space;
 			}
-			else if (MatchTolerance(samples, _halfMarkSamples, Tolerance))
+			else if (MatchMark(samples))
 			{
 				cycleType = CycleType.Mark;
 			}
@@ -135,21 +132,30 @@ namespace SmartDevice.AudioFrequencyShiftKeying
 			       current == 0;
 		}
 
-		private static bool MatchTolerance(long value, long match, double tolerance)
+		private static bool MatchMark(int samples)
 		{
-			var toleranceValue = match * tolerance;
-			var minMatch = match - toleranceValue;
-			var maxMatch = match + toleranceValue;
-			return value > minMatch && value < maxMatch;
+			return samples > HalfMarkSamplesMin && samples < HalfMarkSamplesMax;
 		}
 
-		private const double Tolerance = 0.33;
+		private static bool MatchSpace(int samples)
+		{
+			return samples > HalfSpaceSamplesMin && samples < HalfSpaceSamplesMax;
+		}
+
+		private const int SampleFrequency = 48000;
+
+		// Mark 2,000Hz, 12 samples
+		private const int HalfMarkSamplesMin = 9;
+		private const int HalfMarkSamplesMax = 48;
+
+		// Space 4,000Hz 6 samples
+		private const int HalfSpaceSamplesMin = 2;
+		private const int HalfSpaceSamplesMax = 8;
+
 		private readonly List<byte> _buffer;
 		private MMDevice _captureDevice;
 		private WasapiCapture _audioIn;
 		private float _previousVolume;
-		private long _halfSpaceSamples;
-		private long _halfMarkSamples;
 		private int _sampleCount;
 		private int _previousSample;
 		private CycleType _previousCycleType;
