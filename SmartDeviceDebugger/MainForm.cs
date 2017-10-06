@@ -136,8 +136,11 @@ namespace SmartDevice
 				return;
 			}
 
-			_blocks.Add(e.Block);
-			ProcessBlock(e.Block);
+			var block = e.Block;
+			if (!block.ChecksumValid) return;
+
+			_blocks.Add(block);
+			ProcessBlock(block);
 			ApplyFilters();
 		}
 
