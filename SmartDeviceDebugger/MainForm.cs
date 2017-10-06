@@ -8,8 +8,6 @@ using System.Windows.Forms;
 using Microsoft.Win32;
 using NAudio.CoreAudioApi;
 using SmartDevice.SmartDeviceProtocol;
-using Decoder = SmartDevice.AudioFrequencyShiftKeying.Decoder;
-using Encoder = SmartDevice.AudioFrequencyShiftKeying.Encoder;
 
 namespace SmartDevice
 {
@@ -24,13 +22,14 @@ namespace SmartDevice
 			_blocks = new List<Block>();
 
 			// Input
-			_afskDecoder = new Decoder();
-			var smartDeviceProtocolDecoder = new SmartDeviceProtocol.Decoder(_afskDecoder);
-			smartDeviceProtocolDecoder.BlockReceived += smartDeviceProtocolDecoder_BlockReceived;
+			_afskDecoder = new AudioFrequencyShiftKeying.Decoder();
+			_smartDeviceProtocolDecoder = new SmartDeviceProtocol.Decoder(_afskDecoder);
+			_smartDeviceProtocolDecoder.BlockReceived += smartDeviceProtocolDecoder_BlockReceived;
 
 			// Output
-			_afskEncoder = new Encoder();
+			_afskEncoder = new AudioFrequencyShiftKeying.Encoder();
 			_smartDeviceProtocolEncoder = new SmartDeviceProtocol.Encoder(_afskEncoder);
+			_smartDeviceProtocolEncoder.BlockSent += smartDeviceProtocolEncoder_BlockSent;
 		}
 
 		private void mainForm_Load(object sender, EventArgs e)
@@ -115,6 +114,18 @@ namespace SmartDevice
 		{
 			_blocks.Clear();
 			blocksListView.Items.Clear();
+		}
+
+		private void smartDeviceProtocolEncoder_BlockSent(object sender, BlockSentEventArgs e)
+		{
+			if (InvokeRequired)
+			{
+				BeginInvoke(new EventHandler<BlockSentEventArgs>(smartDeviceProtocolEncoder_BlockSent), sender, e);
+				return;
+			}
+
+			_blocks.Add(e.Block);
+			ApplyFilters();
 		}
 
 		private void smartDeviceProtocolDecoder_BlockReceived(object sender, BlockReceivedEventArgs e)
@@ -223,9 +234,6 @@ namespace SmartDevice
 
 		private void Start()
 		{
-			_dumpingVariables = false;
-			_dumpVariableNumber = 0;
-
 			_afskEncoder.Start(outputDeviceComboBox.SelectedValue as string, 0.5f);
 			_afskDecoder.Start(inputDeviceComboBox.SelectedValue as string, 1.0f);
 		}
@@ -270,28 +278,6 @@ namespace SmartDevice
 		{
 			switch (block.BlockType)
 			{
-				case 0x20:
-					if (!_dumpingVariables) break;
-					if (block.Data.Count >= 2 && block.ChecksumValid)
-					{
-						var variableNumber = block.Data[0];
-						if (variableNumber != _dumpVariableNumber) break;
-
-						_dumpVariableNumber++;
-
-						if (variableNumber > 0x35)
-						{
-							_dumpingVariables = false;
-							break;
-						}
-
-						var readVariableBlock = new Block(0xA0); // READ-VARIABLE
-						readVariableBlock.Data.Add(_dumpVariableNumber);
-
-						_smartDeviceProtocolEncoder.Send(readVariableBlock);
-						_blocks.Add(readVariableBlock);
-					}
-					break;
 				case 0x4F:
 					if (block.Data.Count >= 2 && block.ChecksumValid)
 					{
@@ -301,26 +287,15 @@ namespace SmartDevice
 						responseBlock.Data.Add((byte) (response >> 8));
 						responseBlock.Data.Add((byte) response);
 						_smartDeviceProtocolEncoder.Send(responseBlock);
-						_blocks.Add(responseBlock);
-						ApplyFilters();
 					}
 					break;
 			}
 		}
 
-		private void dumpVariablesButton_Click(object sender, EventArgs e)
+		private void variablesButton_Click(object sender, EventArgs e)
 		{
-			_dumpingVariables = true;
-
-			if (_dumpVariableNumber > 0x35) _dumpVariableNumber = 0x00;
-
-			var readVariableBlock = new Block(0xA0); // READ-VARIABLE
-			readVariableBlock.Data.Add(_dumpVariableNumber);
-
-			_smartDeviceProtocolEncoder.Send(readVariableBlock);
-			_blocks.Add(readVariableBlock);
-
-			ApplyFilters();
+			var variablesForm = new VariablesForm(_smartDeviceProtocolEncoder,_smartDeviceProtocolDecoder);
+			variablesForm.Show(this);
 		}
 
 		private static string SanitizeFilter(string filter)
@@ -358,6 +333,8 @@ namespace SmartDevice
 
 		private static List<byte> ParseFilter(string filter)
 		{
+			if (string.IsNullOrWhiteSpace(filter)) return new List<byte>();
+
 			var filterTypes = new List<byte>();
 			foreach (var hexValue in SanitizeFilter(filter).Split(' '))
 			{
@@ -407,14 +384,13 @@ namespace SmartDevice
 
 		private readonly List<Block> _blocks;
 		private bool _started;
-		private bool _dumpingVariables;
-		private byte _dumpVariableNumber;
 
 		// Input
-		private readonly Decoder _afskDecoder;
+		private readonly AudioFrequencyShiftKeying.Decoder _afskDecoder;
+		private readonly SmartDeviceProtocol.Decoder _smartDeviceProtocolDecoder;
 
 		// Output
-		private readonly Encoder _afskEncoder;
+		private readonly AudioFrequencyShiftKeying.Encoder _afskEncoder;
 		private readonly SmartDeviceProtocol.Encoder _smartDeviceProtocolEncoder;
 	}
 }

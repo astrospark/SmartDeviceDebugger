@@ -39,7 +39,7 @@ namespace SmartDevice.AudioFrequencyShiftKeying
 			_previousSample = 0;
 			_previousCycleType = CycleType.Processed;
 
-			_audioIn = new WasapiCapture(_captureDevice)
+			_audioIn = new WasapiCapture(_captureDevice, true, 50)
 			{
 				ShareMode = AudioClientShareMode.Exclusive,
 				WaveFormat = waveFormat

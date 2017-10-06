@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace SmartDevice.SmartDeviceProtocol
 {
@@ -9,9 +10,10 @@ namespace SmartDevice.SmartDeviceProtocol
 			_afskEncoder = afskEncoder;
 		}
 
+		public EventHandler<BlockSentEventArgs> BlockSent;
+
 		public void Send(Block block)
 		{
-
 			SendFrame(block.BlockType);
 
 			foreach (var data in block.Data)
@@ -23,6 +25,8 @@ namespace SmartDevice.SmartDeviceProtocol
 			SendFrame(block.Checksum);
 
 			SendSpacers(20);
+
+			BlockSent(this, new BlockSentEventArgs(block));
 		}
 
 		private void SendFrame(byte value)

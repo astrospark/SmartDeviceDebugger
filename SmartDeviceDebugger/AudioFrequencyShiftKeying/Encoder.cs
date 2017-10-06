@@ -32,7 +32,7 @@ namespace SmartDevice.AudioFrequencyShiftKeying
 				throw new ArgumentException(@"The requested device does not support the required stream format.", nameof(deviceID));
 			}
 
-			_audioOut = new WasapiOut(renderDevice, AudioClientShareMode.Exclusive, true, 100);
+			_audioOut = new WasapiOut(renderDevice, AudioClientShareMode.Exclusive, true, 50);
 			_previousVolume = _audioOut.Volume;
 			_audioOut.Volume = volume;
 			_audioOut.Init(stereoProvider);

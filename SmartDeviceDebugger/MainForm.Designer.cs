@@ -294,13 +294,14 @@
 			// variablesButton
 			// 
 			this.variablesButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.variablesButton.Enabled = false;
 			this.variablesButton.Location = new System.Drawing.Point(12, 444);
 			this.variablesButton.Name = "variablesButton";
 			this.variablesButton.Size = new System.Drawing.Size(75, 23);
 			this.variablesButton.TabIndex = 11;
 			this.variablesButton.Text = "&Variables";
 			this.variablesButton.UseVisualStyleBackColor = true;
-			this.variablesButton.Click += new System.EventHandler(this.dumpVariablesButton_Click);
+			this.variablesButton.Click += new System.EventHandler(this.variablesButton_Click);
 			// 
 			// MainForm
 			// 
