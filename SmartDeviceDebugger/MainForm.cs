@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
@@ -32,27 +31,20 @@ namespace SmartDevice
 			_smartDeviceProtocolEncoder.BlockSent += smartDeviceProtocolEncoder_BlockSent;
 		}
 
-		private void mainForm_Load(object sender, EventArgs e)
+		private void MainForm_Load(object sender, EventArgs e)
 		{
-			PopulateInputDevices();
-			PopulateOutputDevices();
+			GetInputDevice();
+			GetOutputDevice();
 		}
 
 		private void mainForm_FormClosed(object sender, FormClosedEventArgs e)
 		{
 			Stop();
-
-			Registry.SetValue(@"HKEY_CURRENT_USER\Software\Astrospark Technologies\Smart Device Debugger", @"Input Device ID", inputDeviceComboBox.SelectedValue, RegistryValueKind.String);
-			Registry.SetValue(@"HKEY_CURRENT_USER\Software\Astrospark Technologies\Smart Device Debugger", @"Output Device ID", outputDeviceComboBox.SelectedValue, RegistryValueKind.String);
 		}
 
-		private void PopulateInputDevices()
+		private void GetInputDevice()
 		{
 			var deviceEnumerator = new MMDeviceEnumerator();
-			inputDeviceComboBox.DataSource = deviceEnumerator.EnumerateAudioEndPoints(DataFlow.Capture, DeviceState.Active).ToList();
-			inputDeviceComboBox.ValueMember = nameof(MMDevice.ID);
-			inputDeviceComboBox.DisplayMember = nameof(MMDevice.FriendlyName);
-
 			string defaultDeviceID = null;
 			try
 			{
@@ -62,17 +54,12 @@ namespace SmartDevice
 			{
 				Debug.WriteLine(e);
 			}
-			var deviceID = Registry.GetValue(@"HKEY_CURRENT_USER\Software\Astrospark Technologies\Smart Device Debugger", @"Input Device ID", defaultDeviceID) as string;
-			if (deviceID != null) inputDeviceComboBox.SelectedValue = deviceID;
+			_inputDeviceID = Registry.GetValue(@"HKEY_CURRENT_USER\Software\Astrospark Technologies\Smart Device Debugger", @"Input Device ID", defaultDeviceID) as string;
 		}
 
-		private void PopulateOutputDevices()
+		private void GetOutputDevice()
 		{
 			var deviceEnumerator = new MMDeviceEnumerator();
-			outputDeviceComboBox.DataSource = deviceEnumerator.EnumerateAudioEndPoints(DataFlow.Render, DeviceState.Active).ToList();
-			outputDeviceComboBox.ValueMember = nameof(MMDevice.ID);
-			outputDeviceComboBox.DisplayMember = nameof(MMDevice.FriendlyName);
-
 			string defaultDeviceID = null;
 			try
 			{
@@ -82,8 +69,7 @@ namespace SmartDevice
 			{
 				Debug.WriteLine(e);
 			}
-			var deviceID = Registry.GetValue(@"HKEY_CURRENT_USER\Software\Astrospark Technologies\Smart Device Debugger", @"Output Device ID", defaultDeviceID) as string;
-			if (deviceID != null) outputDeviceComboBox.SelectedValue = deviceID;
+			_outputDeviceID = Registry.GetValue(@"HKEY_CURRENT_USER\Software\Astrospark Technologies\Smart Device Debugger", @"Output Device ID", defaultDeviceID) as string;
 		}
 
 		private void startStopButton_Click(object sender, EventArgs e)
@@ -93,8 +79,7 @@ namespace SmartDevice
 				_started = true;
 				// ReSharper disable once LocalizableElement
 				startStopButton.Text = "&Stop";
-				inputDeviceComboBox.Enabled = false;
-				outputDeviceComboBox.Enabled = false;
+				optionsButton.Enabled = false;
 				variablesButton.Enabled = true;
 				Start();
 			}
@@ -103,11 +88,27 @@ namespace SmartDevice
 				_started = false;
 				// ReSharper disable once LocalizableElement
 				startStopButton.Text = "&Start";
-				inputDeviceComboBox.Enabled = true;
-				outputDeviceComboBox.Enabled = true;
+				optionsButton.Enabled = true;
 				variablesButton.Enabled = false;
 				Stop();
 			}
+		}
+
+		private void optionsButton_Click(object sender, EventArgs e)
+		{
+			var optionsForm = new OptionsForm
+			{
+				SelectedInputDeviceID = _inputDeviceID,
+				SelectedOutputDeviceID = _outputDeviceID
+			};
+
+			if (optionsForm.ShowDialog(this) != DialogResult.OK) return;
+
+			_inputDeviceID = optionsForm.SelectedInputDeviceID;
+			_outputDeviceID = optionsForm.SelectedOutputDeviceID;
+
+			Registry.SetValue(@"HKEY_CURRENT_USER\Software\Astrospark Technologies\Smart Device Debugger", @"Input Device ID", _inputDeviceID, RegistryValueKind.String);
+			Registry.SetValue(@"HKEY_CURRENT_USER\Software\Astrospark Technologies\Smart Device Debugger", @"Output Device ID", _outputDeviceID, RegistryValueKind.String);
 		}
 
 		private void clearButton_Click(object sender, EventArgs e)
@@ -237,8 +238,8 @@ namespace SmartDevice
 
 		private void Start()
 		{
-			_afskEncoder.Start(outputDeviceComboBox.SelectedValue as string, 0.5f);
-			_afskDecoder.Start(inputDeviceComboBox.SelectedValue as string, 1.0f);
+			_afskEncoder.Start(_outputDeviceID, 0.5f);
+			_afskDecoder.Start(_inputDeviceID, 1.0f);
 		}
 
 		private void Stop()
@@ -389,10 +390,12 @@ namespace SmartDevice
 		private bool _started;
 
 		// Input
+		private string _inputDeviceID;
 		private readonly AudioFrequencyShiftKeying.Decoder _afskDecoder;
 		private readonly SmartDeviceProtocol.Decoder _smartDeviceProtocolDecoder;
 
 		// Output
+		private string _outputDeviceID;
 		private readonly AudioFrequencyShiftKeying.Encoder _afskEncoder;
 		private readonly SmartDeviceProtocol.Encoder _smartDeviceProtocolEncoder;
 	}
