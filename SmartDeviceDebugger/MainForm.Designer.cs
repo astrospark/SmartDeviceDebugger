@@ -153,6 +153,7 @@
 			this.blocksListView.ContextMenuStrip = this.blocksListViewContextMenuStrip;
 			this.blocksListView.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.blocksListView.FullRowSelect = true;
+			this.blocksListView.HideSelection = false;
 			this.blocksListView.Location = new System.Drawing.Point(0, 0);
 			this.blocksListView.Name = "blocksListView";
 			this.blocksListView.Size = new System.Drawing.Size(716, 150);
