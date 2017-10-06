@@ -12,7 +12,7 @@ namespace SmartDevice
 
 			_timer = new Timer
 			{
-				Interval = 300
+				Interval = 500
 			};
 			_timer.Tick += timer_Tick;
 		}
