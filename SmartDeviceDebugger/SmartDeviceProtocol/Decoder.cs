@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using SmartDevice.AudioFrequencyShiftKeying;
+using System.Diagnostics;
+using DataReceivedEventArgs = SmartDevice.AudioFrequencyShiftKeying.DataReceivedEventArgs;
 
 namespace SmartDevice.SmartDeviceProtocol
 {
@@ -36,19 +37,17 @@ namespace SmartDevice.SmartDeviceProtocol
 					case State.Idle:
 						if (bit == 0)
 						{
-							// ReSharper disable once ConditionIsAlwaysTrueOrFalse
 							_currentFrameBits.Add(bit);
 							_state = State.Data;
 						}
 						break;
 					case State.Data:
 						_currentFrameBits.Add(bit);
-						if (_currentFrameBits.Count == 9) _state = State.FrameStop;
+						if (_currentFrameBits.Count >= 9) _state = State.FrameStop;
 						break;
 					case State.FrameStop:
 						if (bit == 1) // End of frame data
 						{
-							// ReSharper disable once ConditionIsAlwaysTrueOrFalse
 							_currentFrameBits.Add(bit);
 							var data =
 								_currentFrameBits[1] |
@@ -88,7 +87,6 @@ namespace SmartDevice.SmartDeviceProtocol
 						{
 							if (_spacerCount < 10)
 							{
-								// ReSharper disable once ConditionIsAlwaysTrueOrFalse
 								_currentFrameBits.Add(bit);
 								_spacerCount = 0;
 								_state = State.Data;
