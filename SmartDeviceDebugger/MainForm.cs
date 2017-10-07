@@ -81,6 +81,8 @@ namespace SmartDevice
 				startStopButton.Text = "&Stop";
 				optionsButton.Enabled = false;
 				variablesButton.Enabled = true;
+				commandTextBox.Enabled = true;
+				sendButton.Enabled = true;
 				Start();
 			}
 			else
@@ -90,6 +92,8 @@ namespace SmartDevice
 				startStopButton.Text = "&Start";
 				optionsButton.Enabled = true;
 				variablesButton.Enabled = false;
+				commandTextBox.Enabled = false;
+				sendButton.Enabled = false;
 				Stop();
 			}
 		}
@@ -168,8 +172,8 @@ namespace SmartDevice
 
 		private void filterTextBox_Leave(object sender, EventArgs e)
 		{
-			includeTextBox.Text = SanitizeFilter(includeTextBox.Text);
-			excludeTextBox.Text = SanitizeFilter(excludeTextBox.Text);
+			includeTextBox.Text = SanitizeHex(includeTextBox.Text);
+			excludeTextBox.Text = SanitizeHex(excludeTextBox.Text);
 			ApplyFilters();
 		}
 
@@ -253,8 +257,8 @@ namespace SmartDevice
 			blocksListView.BeginUpdate();
 			blocksListView.Items.Clear();
 
-			var includeFilter = ParseFilter(includeTextBox.Text);
-			var excludeFilter = ParseFilter(excludeTextBox.Text);
+			var includeFilter = ParseHex(includeTextBox.Text);
+			var excludeFilter = ParseHex(excludeTextBox.Text);
 
 			foreach (var block in _blocks)
 			{
@@ -302,7 +306,7 @@ namespace SmartDevice
 			variablesForm.Show(this);
 		}
 
-		private static string SanitizeFilter(string filter)
+		private static string SanitizeHex(string filter)
 		{
 			var rawParts = filter.Split(new[] { ' ', ',', '.', ';', ':' }, StringSplitOptions.RemoveEmptyEntries);
 
@@ -335,12 +339,12 @@ namespace SmartDevice
 			return string.Join(" ", filterParts);
 		}
 
-		private static List<byte> ParseFilter(string filter)
+		private static List<byte> ParseHex(string filter)
 		{
 			if (string.IsNullOrWhiteSpace(filter)) return new List<byte>();
 
 			var filterTypes = new List<byte>();
-			foreach (var hexValue in SanitizeFilter(filter).Split(' '))
+			foreach (var hexValue in SanitizeHex(filter).Split(' '))
 			{
 				try
 				{
@@ -384,6 +388,40 @@ namespace SmartDevice
 				count++;
 			}
 			if (count > 0) ApplyFilters();
+		}
+
+		private void commandTextBox_KeyPress(object sender, KeyPressEventArgs e)
+		{
+			if (e.KeyChar == (char) Keys.Return)
+			{
+				SendCommand();
+				e.Handled = true;
+			}
+		}
+
+		private void commandTextBox_Leave(object sender, EventArgs e)
+		{
+			commandTextBox.Text = SanitizeHex(commandTextBox.Text);
+		}
+
+		private void sendButton_Click(object sender, EventArgs e)
+		{
+			SendCommand();
+		}
+
+		private void SendCommand()
+		{
+			var bytes = ParseHex(commandTextBox.Text);
+			if (bytes == null || bytes.Count < 1) return;
+
+			var block = new Block(bytes[0]);
+			for (var index = 1; index < bytes.Count; index++)
+			{
+				block.Data.Add(bytes[index]);
+			}
+			_smartDeviceProtocolEncoder.Send(block);
+
+			commandTextBox.SelectAll();
 		}
 
 		private readonly List<Block> _blocks;

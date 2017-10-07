@@ -51,20 +51,23 @@
 			this.clearButton = new System.Windows.Forms.Button();
 			this.variablesButton = new System.Windows.Forms.Button();
 			this.optionsButton = new System.Windows.Forms.Button();
+			this.commandTextBox = new System.Windows.Forms.TextBox();
+			this.sendButton = new System.Windows.Forms.Button();
+			this.filterGroupBox = new System.Windows.Forms.GroupBox();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
 			this.splitContainer.Panel1.SuspendLayout();
 			this.splitContainer.Panel2.SuspendLayout();
 			this.splitContainer.SuspendLayout();
 			this.blocksListViewContextMenuStrip.SuspendLayout();
+			this.filterGroupBox.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// startStopButton
 			// 
-			this.startStopButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.startStopButton.Location = new System.Drawing.Point(629, 12);
+			this.startStopButton.Location = new System.Drawing.Point(12, 12);
 			this.startStopButton.Name = "startStopButton";
-			this.startStopButton.Size = new System.Drawing.Size(75, 23);
-			this.startStopButton.TabIndex = 4;
+			this.startStopButton.Size = new System.Drawing.Size(75, 25);
+			this.startStopButton.TabIndex = 0;
 			this.startStopButton.Text = "&Start";
 			this.startStopButton.UseVisualStyleBackColor = true;
 			this.startStopButton.Click += new System.EventHandler(this.startStopButton_Click);
@@ -73,20 +76,21 @@
 			// 
 			this.detailsTextBox.BackColor = System.Drawing.SystemColors.Window;
 			this.detailsTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.detailsTextBox.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.detailsTextBox.Location = new System.Drawing.Point(0, 0);
 			this.detailsTextBox.Multiline = true;
 			this.detailsTextBox.Name = "detailsTextBox";
 			this.detailsTextBox.ReadOnly = true;
 			this.detailsTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-			this.detailsTextBox.Size = new System.Drawing.Size(716, 139);
-			this.detailsTextBox.TabIndex = 2;
+			this.detailsTextBox.Size = new System.Drawing.Size(723, 125);
+			this.detailsTextBox.TabIndex = 0;
 			// 
 			// splitContainer
 			// 
 			this.splitContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.splitContainer.Location = new System.Drawing.Point(0, 93);
+			this.splitContainer.Location = new System.Drawing.Point(0, 126);
 			this.splitContainer.Name = "splitContainer";
 			this.splitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
 			// 
@@ -97,8 +101,8 @@
 			// splitContainer.Panel2
 			// 
 			this.splitContainer.Panel2.Controls.Add(this.detailsTextBox);
-			this.splitContainer.Size = new System.Drawing.Size(716, 345);
-			this.splitContainer.SplitterDistance = 202;
+			this.splitContainer.Size = new System.Drawing.Size(723, 311);
+			this.splitContainer.SplitterDistance = 182;
 			this.splitContainer.TabIndex = 6;
 			// 
 			// blocksListView
@@ -113,7 +117,7 @@
 			this.blocksListView.HideSelection = false;
 			this.blocksListView.Location = new System.Drawing.Point(0, 0);
 			this.blocksListView.Name = "blocksListView";
-			this.blocksListView.Size = new System.Drawing.Size(716, 202);
+			this.blocksListView.Size = new System.Drawing.Size(723, 182);
 			this.blocksListView.TabIndex = 0;
 			this.blocksListView.UseCompatibleStateImageBehavior = false;
 			this.blocksListView.View = System.Windows.Forms.View.Details;
@@ -188,24 +192,24 @@
 			// 
 			// autoScrollCheckBox
 			// 
-			this.autoScrollCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.autoScrollCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.autoScrollCheckBox.Appearance = System.Windows.Forms.Appearance.Button;
 			this.autoScrollCheckBox.Checked = true;
 			this.autoScrollCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.autoScrollCheckBox.Location = new System.Drawing.Point(629, 444);
+			this.autoScrollCheckBox.Location = new System.Drawing.Point(636, 12);
 			this.autoScrollCheckBox.Name = "autoScrollCheckBox";
-			this.autoScrollCheckBox.Size = new System.Drawing.Size(75, 23);
-			this.autoScrollCheckBox.TabIndex = 10;
+			this.autoScrollCheckBox.Size = new System.Drawing.Size(75, 25);
+			this.autoScrollCheckBox.TabIndex = 5;
 			this.autoScrollCheckBox.Text = "Auto Scroll";
 			this.autoScrollCheckBox.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 			this.autoScrollCheckBox.UseVisualStyleBackColor = true;
 			// 
 			// includeLabel
 			// 
-			this.includeLabel.Location = new System.Drawing.Point(12, 44);
+			this.includeLabel.Location = new System.Drawing.Point(6, 23);
 			this.includeLabel.Name = "includeLabel";
 			this.includeLabel.Size = new System.Drawing.Size(85, 13);
-			this.includeLabel.TabIndex = 6;
+			this.includeLabel.TabIndex = 0;
 			this.includeLabel.Text = "Include:";
 			this.includeLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
@@ -213,77 +217,118 @@
 			// 
 			this.includeTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.includeTextBox.Location = new System.Drawing.Point(103, 41);
+			this.includeTextBox.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.includeTextBox.Location = new System.Drawing.Point(97, 19);
 			this.includeTextBox.Name = "includeTextBox";
-			this.includeTextBox.Size = new System.Drawing.Size(520, 20);
-			this.includeTextBox.TabIndex = 7;
+			this.includeTextBox.Size = new System.Drawing.Size(596, 23);
+			this.includeTextBox.TabIndex = 1;
 			this.includeTextBox.Leave += new System.EventHandler(this.filterTextBox_Leave);
 			// 
 			// excludeTextBox
 			// 
 			this.excludeTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.excludeTextBox.Location = new System.Drawing.Point(103, 67);
+			this.excludeTextBox.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.excludeTextBox.Location = new System.Drawing.Point(97, 48);
 			this.excludeTextBox.Name = "excludeTextBox";
-			this.excludeTextBox.Size = new System.Drawing.Size(520, 20);
-			this.excludeTextBox.TabIndex = 9;
+			this.excludeTextBox.Size = new System.Drawing.Size(596, 23);
+			this.excludeTextBox.TabIndex = 3;
 			this.excludeTextBox.Leave += new System.EventHandler(this.filterTextBox_Leave);
 			// 
 			// excludeLabel
 			// 
-			this.excludeLabel.Location = new System.Drawing.Point(12, 70);
+			this.excludeLabel.Location = new System.Drawing.Point(6, 52);
 			this.excludeLabel.Name = "excludeLabel";
 			this.excludeLabel.Size = new System.Drawing.Size(85, 13);
-			this.excludeLabel.TabIndex = 8;
+			this.excludeLabel.TabIndex = 2;
 			this.excludeLabel.Text = "Exclude:";
 			this.excludeLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
 			// 
 			// clearButton
 			// 
-			this.clearButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.clearButton.Location = new System.Drawing.Point(548, 444);
+			this.clearButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.clearButton.Location = new System.Drawing.Point(555, 12);
 			this.clearButton.Name = "clearButton";
-			this.clearButton.Size = new System.Drawing.Size(75, 23);
-			this.clearButton.TabIndex = 5;
+			this.clearButton.Size = new System.Drawing.Size(75, 25);
+			this.clearButton.TabIndex = 4;
 			this.clearButton.Text = "&Clear";
 			this.clearButton.UseVisualStyleBackColor = true;
 			this.clearButton.Click += new System.EventHandler(this.clearButton_Click);
 			// 
 			// variablesButton
 			// 
-			this.variablesButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.variablesButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.variablesButton.Enabled = false;
-			this.variablesButton.Location = new System.Drawing.Point(93, 12);
+			this.variablesButton.Location = new System.Drawing.Point(474, 12);
 			this.variablesButton.Name = "variablesButton";
-			this.variablesButton.Size = new System.Drawing.Size(75, 23);
-			this.variablesButton.TabIndex = 11;
+			this.variablesButton.Size = new System.Drawing.Size(75, 25);
+			this.variablesButton.TabIndex = 2;
 			this.variablesButton.Text = "&Variables";
 			this.variablesButton.UseVisualStyleBackColor = true;
 			this.variablesButton.Click += new System.EventHandler(this.variablesButton_Click);
 			// 
 			// optionsButton
 			// 
-			this.optionsButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.optionsButton.Location = new System.Drawing.Point(12, 12);
+			this.optionsButton.Location = new System.Drawing.Point(93, 12);
 			this.optionsButton.Name = "optionsButton";
-			this.optionsButton.Size = new System.Drawing.Size(75, 23);
-			this.optionsButton.TabIndex = 12;
+			this.optionsButton.Size = new System.Drawing.Size(75, 25);
+			this.optionsButton.TabIndex = 1;
 			this.optionsButton.Text = "&Options";
 			this.optionsButton.UseVisualStyleBackColor = true;
 			this.optionsButton.Click += new System.EventHandler(this.optionsButton_Click);
+			// 
+			// commandTextBox
+			// 
+			this.commandTextBox.AcceptsReturn = true;
+			this.commandTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.commandTextBox.Enabled = false;
+			this.commandTextBox.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.commandTextBox.Location = new System.Drawing.Point(12, 444);
+			this.commandTextBox.Name = "commandTextBox";
+			this.commandTextBox.Size = new System.Drawing.Size(618, 23);
+			this.commandTextBox.TabIndex = 7;
+			this.commandTextBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.commandTextBox_KeyPress);
+			this.commandTextBox.Leave += new System.EventHandler(this.commandTextBox_Leave);
+			// 
+			// sendButton
+			// 
+			this.sendButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.sendButton.Enabled = false;
+			this.sendButton.Location = new System.Drawing.Point(636, 443);
+			this.sendButton.Name = "sendButton";
+			this.sendButton.Size = new System.Drawing.Size(75, 25);
+			this.sendButton.TabIndex = 8;
+			this.sendButton.Text = "&Send";
+			this.sendButton.UseVisualStyleBackColor = true;
+			this.sendButton.Click += new System.EventHandler(this.sendButton_Click);
+			// 
+			// filterGroupBox
+			// 
+			this.filterGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.filterGroupBox.Controls.Add(this.includeTextBox);
+			this.filterGroupBox.Controls.Add(this.includeLabel);
+			this.filterGroupBox.Controls.Add(this.excludeLabel);
+			this.filterGroupBox.Controls.Add(this.excludeTextBox);
+			this.filterGroupBox.Location = new System.Drawing.Point(12, 43);
+			this.filterGroupBox.Name = "filterGroupBox";
+			this.filterGroupBox.Size = new System.Drawing.Size(699, 77);
+			this.filterGroupBox.TabIndex = 6;
+			this.filterGroupBox.TabStop = false;
+			this.filterGroupBox.Text = "&Filter Block Types";
 			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(716, 479);
+			this.ClientSize = new System.Drawing.Size(723, 479);
+			this.Controls.Add(this.filterGroupBox);
+			this.Controls.Add(this.sendButton);
+			this.Controls.Add(this.commandTextBox);
 			this.Controls.Add(this.optionsButton);
 			this.Controls.Add(this.variablesButton);
 			this.Controls.Add(this.clearButton);
-			this.Controls.Add(this.excludeTextBox);
-			this.Controls.Add(this.excludeLabel);
-			this.Controls.Add(this.includeTextBox);
-			this.Controls.Add(this.includeLabel);
 			this.Controls.Add(this.autoScrollCheckBox);
 			this.Controls.Add(this.splitContainer);
 			this.Controls.Add(this.startStopButton);
@@ -297,6 +342,8 @@
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer)).EndInit();
 			this.splitContainer.ResumeLayout(false);
 			this.blocksListViewContextMenuStrip.ResumeLayout(false);
+			this.filterGroupBox.ResumeLayout(false);
+			this.filterGroupBox.PerformLayout();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -326,6 +373,9 @@
 		private System.Windows.Forms.ToolStripMenuItem excludeBlockTypeToolStripMenuItem;
 		private System.Windows.Forms.Button variablesButton;
 		private System.Windows.Forms.Button optionsButton;
+		private System.Windows.Forms.TextBox commandTextBox;
+		private System.Windows.Forms.Button sendButton;
+		private System.Windows.Forms.GroupBox filterGroupBox;
 	}
 }
 
