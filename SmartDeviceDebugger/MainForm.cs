@@ -242,7 +242,7 @@ namespace SmartDevice
 
 		private void Start()
 		{
-			_afskEncoder.Start(_outputDeviceID, 0.5f);
+			_afskEncoder.Start(_outputDeviceID, 1.0f);
 			_afskDecoder.Start(_inputDeviceID, 1.0f);
 		}
 
