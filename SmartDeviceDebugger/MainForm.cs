@@ -172,8 +172,8 @@ namespace SmartDevice
 
 		private void filterTextBox_Leave(object sender, EventArgs e)
 		{
-			includeTextBox.Text = SanitizeHex(includeTextBox.Text);
-			excludeTextBox.Text = SanitizeHex(excludeTextBox.Text);
+			includeTextBox.Text = SanitizeHex(includeTextBox.Text, true);
+			excludeTextBox.Text = SanitizeHex(excludeTextBox.Text, true);
 			ApplyFilters();
 		}
 
@@ -306,9 +306,9 @@ namespace SmartDevice
 			variablesForm.Show(this);
 		}
 
-		private static string SanitizeHex(string filter)
+		private static string SanitizeHex(string hex, bool unique = false)
 		{
-			var rawParts = filter.Split(new[] { ' ', ',', '.', ';', ':' }, StringSplitOptions.RemoveEmptyEntries);
+			var rawParts = hex.Split(new[] { ' ', ',', '.', ';', ':' }, StringSplitOptions.RemoveEmptyEntries);
 
 			var filterParts = new List<string>();
 			var filterTypes = new List<byte>();
@@ -330,7 +330,7 @@ namespace SmartDevice
 					continue;
 				}
 
-				if (filterTypes.Contains(value)) continue;
+				if (unique && filterTypes.Contains(value)) continue;
 
 				filterParts.Add($"{value:X2}");
 				filterTypes.Add(value);
@@ -339,12 +339,12 @@ namespace SmartDevice
 			return string.Join(" ", filterParts);
 		}
 
-		private static List<byte> ParseHex(string filter)
+		private static List<byte> ParseHex(string hex)
 		{
-			if (string.IsNullOrWhiteSpace(filter)) return new List<byte>();
+			if (string.IsNullOrWhiteSpace(hex)) return new List<byte>();
 
 			var filterTypes = new List<byte>();
-			foreach (var hexValue in SanitizeHex(filter).Split(' '))
+			foreach (var hexValue in SanitizeHex(hex).Split(' '))
 			{
 				try
 				{
