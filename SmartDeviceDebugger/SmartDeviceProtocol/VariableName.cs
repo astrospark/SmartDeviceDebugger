@@ -2,7 +2,7 @@
 
 namespace SmartDevice.SmartDeviceProtocol
 {
-	internal class VariableName
+	internal static class VariableName
 	{
 		public static string Get(byte blockType)
 		{
@@ -34,8 +34,14 @@ namespace SmartDevice.SmartDeviceProtocol
 				[0x18] = "Group3 Players",
 				[0x19] = "Team Number",
 				[0x1A] = "Player Number",
+				[0x1E] = "Mega Count",
 				[0x20] = "Game Time Minutes",
 				[0x21] = "Game Time Seconds",
+				[0x22] = "DeadMan Timer Minutes",
+				[0x29] = "App Version",
+				[0x2A] = "App Title",
+				[0x2B] = "App Source",
+				[0x2F] = "Language ID",
 			};
 
 			return names.ContainsKey(blockType)
