@@ -18,7 +18,7 @@ namespace SmartDevice
 
 			_timer = new Timer
 			{
-				Interval = 2000
+				Interval = 500
 			};
 			_timer.Tick += timer_Tick;
 		}
@@ -150,6 +150,7 @@ namespace SmartDevice
 			readVariableBlock.Data.Add(_getVariable);
 			_encoder.Send(readVariableBlock);
 
+			_timer.Stop(); // Reset
 			_timer.Start();
 		}
 
