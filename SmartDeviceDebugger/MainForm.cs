@@ -318,14 +318,16 @@ namespace SmartDevice
 
 		private void memoryButton_Click(object sender, EventArgs e)
 		{
-			var memoryForm = new MemoryForm(_smartDeviceProtocolEncoder, _smartDeviceProtocolDecoder);
-			memoryForm.Show(this);
+			if (_memoryForm != null && _memoryForm.Visible) return;
+			_memoryForm = new MemoryForm(_smartDeviceProtocolEncoder, _smartDeviceProtocolDecoder);
+			_memoryForm.Show(this);
 		}
 
 		private void variablesButton_Click(object sender, EventArgs e)
 		{
-			var variablesForm = new VariablesForm(_smartDeviceProtocolEncoder,_smartDeviceProtocolDecoder);
-			variablesForm.Show(this);
+			if (_variablesForm != null && _variablesForm.Visible) return;
+			_variablesForm = new VariablesForm(_smartDeviceProtocolEncoder, _smartDeviceProtocolDecoder);
+			_variablesForm.Show(this);
 		}
 
 		private static string SanitizeHex(string hex, bool unique = false)
@@ -457,6 +459,8 @@ namespace SmartDevice
 
 		private readonly List<Block> _blocks;
 		private bool _started;
+		private MemoryForm _memoryForm;
+		private VariablesForm _variablesForm;
 
 		// Input
 		private string _inputDeviceID;

@@ -201,7 +201,7 @@
 			this.autoScrollCheckBox.Location = new System.Drawing.Point(636, 12);
 			this.autoScrollCheckBox.Name = "autoScrollCheckBox";
 			this.autoScrollCheckBox.Size = new System.Drawing.Size(75, 25);
-			this.autoScrollCheckBox.TabIndex = 5;
+			this.autoScrollCheckBox.TabIndex = 6;
 			this.autoScrollCheckBox.Text = "Auto Scroll";
 			this.autoScrollCheckBox.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 			this.autoScrollCheckBox.UseVisualStyleBackColor = true;
@@ -252,7 +252,7 @@
 			this.clearButton.Location = new System.Drawing.Point(555, 12);
 			this.clearButton.Name = "clearButton";
 			this.clearButton.Size = new System.Drawing.Size(75, 25);
-			this.clearButton.TabIndex = 4;
+			this.clearButton.TabIndex = 5;
 			this.clearButton.Text = "&Clear";
 			this.clearButton.UseVisualStyleBackColor = true;
 			this.clearButton.Click += new System.EventHandler(this.clearButton_Click);
@@ -264,7 +264,7 @@
 			this.variablesButton.Location = new System.Drawing.Point(474, 12);
 			this.variablesButton.Name = "variablesButton";
 			this.variablesButton.Size = new System.Drawing.Size(75, 25);
-			this.variablesButton.TabIndex = 3;
+			this.variablesButton.TabIndex = 4;
 			this.variablesButton.Text = "&Variables";
 			this.variablesButton.UseVisualStyleBackColor = true;
 			this.variablesButton.Click += new System.EventHandler(this.variablesButton_Click);
@@ -289,7 +289,7 @@
 			this.commandTextBox.Location = new System.Drawing.Point(12, 444);
 			this.commandTextBox.Name = "commandTextBox";
 			this.commandTextBox.Size = new System.Drawing.Size(618, 23);
-			this.commandTextBox.TabIndex = 7;
+			this.commandTextBox.TabIndex = 8;
 			this.commandTextBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.commandTextBox_KeyPress);
 			this.commandTextBox.Leave += new System.EventHandler(this.commandTextBox_Leave);
 			// 
@@ -300,7 +300,7 @@
 			this.sendButton.Location = new System.Drawing.Point(636, 443);
 			this.sendButton.Name = "sendButton";
 			this.sendButton.Size = new System.Drawing.Size(75, 25);
-			this.sendButton.TabIndex = 8;
+			this.sendButton.TabIndex = 9;
 			this.sendButton.Text = "&Send";
 			this.sendButton.UseVisualStyleBackColor = true;
 			this.sendButton.Click += new System.EventHandler(this.sendButton_Click);
@@ -316,7 +316,7 @@
 			this.filterGroupBox.Location = new System.Drawing.Point(12, 43);
 			this.filterGroupBox.Name = "filterGroupBox";
 			this.filterGroupBox.Size = new System.Drawing.Size(699, 77);
-			this.filterGroupBox.TabIndex = 6;
+			this.filterGroupBox.TabIndex = 7;
 			this.filterGroupBox.TabStop = false;
 			this.filterGroupBox.Text = "&Filter Block Types";
 			// 
@@ -341,7 +341,7 @@
 			this.memoryButton.Location = new System.Drawing.Point(393, 12);
 			this.memoryButton.Name = "memoryButton";
 			this.memoryButton.Size = new System.Drawing.Size(75, 25);
-			this.memoryButton.TabIndex = 9;
+			this.memoryButton.TabIndex = 3;
 			this.memoryButton.Text = "&Memory";
 			this.memoryButton.UseVisualStyleBackColor = true;
 			this.memoryButton.Click += new System.EventHandler(this.memoryButton_Click);
