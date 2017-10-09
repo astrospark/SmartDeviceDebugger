@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using NAudio.CoreAudioApi;
-using NAudio.Wave;
+using CSCore;
+using CSCore.CoreAudioAPI;
+using CSCore.SoundIn;
 
 namespace SmartDevice.AudioFrequencyShiftKeying
 {
@@ -13,57 +14,60 @@ namespace SmartDevice.AudioFrequencyShiftKeying
 			_buffer = new List<byte>();
 		}
 
-		public EventHandler<DataReceivedEventArgs> DataReceived;
+		public event EventHandler<DataReceivedEventArgs> DataReceived;
 
 		public void Start(string deviceID, float volume)
 		{
 			if (_audioIn != null) return;
 
 			var deviceEnumerator = new MMDeviceEnumerator();
-			_captureDevice = deviceEnumerator.EnumerateAudioEndPoints(DataFlow.Capture, DeviceState.Active).FirstOrDefault(endpoint => endpoint.ID == deviceID);
+			_captureDevice = deviceEnumerator.EnumAudioEndpoints(DataFlow.Capture, DeviceState.Active).FirstOrDefault(endpoint => endpoint.DeviceID == deviceID);
 			if (_captureDevice == null)
 			{
 				throw new ArgumentException(@"The requested device ID could not be found.", nameof(deviceID));
 			}
 
 			var waveFormat = new WaveFormat(SampleFrequency, 16, 2);
-			if (!_captureDevice.AudioClient.IsFormatSupported(AudioClientShareMode.Exclusive, waveFormat))
+			var audioClient = AudioClient.FromMMDevice(_captureDevice);
+			if (!audioClient.IsFormatSupported(AudioClientShareMode.Exclusive, waveFormat))
 			{
 				throw new ArgumentException(@"The requested device does not support the required stream format.", nameof(deviceID));
 			}
-
 			_sampleCount = 0;
 			_previousSample = 0;
 			_previousCycleType = CycleType.Processed;
 
-			_audioIn = new WasapiCapture(_captureDevice, true, 50)
+			_audioIn = new WasapiCapture(false, AudioClientShareMode.Exclusive, 50, waveFormat)
 			{
-				ShareMode = AudioClientShareMode.Exclusive,
-				WaveFormat = waveFormat
+				Device = _captureDevice
 			};
-			_previousVolume = _captureDevice.AudioEndpointVolume.MasterVolumeLevel;
-			_captureDevice.AudioEndpointVolume.MasterVolumeLevelScalar = volume;
 			_audioIn.DataAvailable += audioIn_DataAvailable;
-			_audioIn.StartRecording();
+
+			var audioEndpointVolume = AudioEndpointVolume.FromDevice(_captureDevice);
+			_previousVolume = audioEndpointVolume.MasterVolumeLevel;
+			audioEndpointVolume.MasterVolumeLevelScalar = volume;
+
+			_audioIn.Initialize();
+			_audioIn.Start();
 		}
 
 		public void Stop()
 		{
 			if (_audioIn == null) return;
 
-			_audioIn.StopRecording();
-			_captureDevice.AudioEndpointVolume.MasterVolumeLevel = _previousVolume;
+			_audioIn.Stop();
+			AudioEndpointVolume.FromDevice(_captureDevice).MasterVolumeLevel = _previousVolume;
 			_audioIn.Dispose();
 			_audioIn = null;
 		}
 
-		private void audioIn_DataAvailable(object sender, WaveInEventArgs e)
+		private void audioIn_DataAvailable(object sender, DataAvailableEventArgs e)
 		{
-			for (var n = 0; n < e.BytesRecorded; n += 2)
+			for (var n = 0; n < e.ByteCount; n += 2)
 			{
 				if (n % 4 == 0) continue; // skip even samples (left channel)
 
-				var sample = BitConverter.ToUInt16(e.Buffer, n) - 32768;
+				var sample = BitConverter.ToUInt16(e.Data, n) - 32768;
 
 				if (ZeroCrossed(_previousSample, sample))
 				{
@@ -78,7 +82,8 @@ namespace SmartDevice.AudioFrequencyShiftKeying
 			// ReSharper disable once InvertIf
 			if (_buffer.Count > 0)
 			{
-				DataReceived(this, new DataReceivedEventArgs(_buffer));
+				var eventHandler = DataReceived;
+				eventHandler?.Invoke(this, new DataReceivedEventArgs(_buffer));
 				_buffer.Clear();
 			}
 		}

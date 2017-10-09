@@ -1,9 +1,6 @@
-﻿using System;
-using System.Diagnostics;
-using System.Linq;
+﻿using System.Linq;
 using System.Windows.Forms;
-using Microsoft.Win32;
-using NAudio.CoreAudioApi;
+using CSCore.CoreAudioAPI;
 
 namespace SmartDevice
 {
@@ -32,16 +29,16 @@ namespace SmartDevice
 		private void PopulateInputDevices()
 		{
 			var deviceEnumerator = new MMDeviceEnumerator();
-			inputDeviceComboBox.DataSource = deviceEnumerator.EnumerateAudioEndPoints(DataFlow.Capture, DeviceState.Active).ToList();
-			inputDeviceComboBox.ValueMember = nameof(MMDevice.ID);
+			inputDeviceComboBox.DataSource = deviceEnumerator.EnumAudioEndpoints(DataFlow.Capture, DeviceState.Active).ToList();
+			inputDeviceComboBox.ValueMember = nameof(MMDevice.DeviceID);
 			inputDeviceComboBox.DisplayMember = nameof(MMDevice.FriendlyName);
 		}
 
 		private void PopulateOutputDevices()
 		{
 			var deviceEnumerator = new MMDeviceEnumerator();
-			outputDeviceComboBox.DataSource = deviceEnumerator.EnumerateAudioEndPoints(DataFlow.Render, DeviceState.Active).ToList();
-			outputDeviceComboBox.ValueMember = nameof(MMDevice.ID);
+			outputDeviceComboBox.DataSource = deviceEnumerator.EnumAudioEndpoints(DataFlow.Render, DeviceState.Active).ToList();
+			outputDeviceComboBox.ValueMember = nameof(MMDevice.DeviceID);
 			outputDeviceComboBox.DisplayMember = nameof(MMDevice.FriendlyName);
 		}
 	}

@@ -18,7 +18,7 @@ namespace SmartDevice
 
 			_timer = new Timer
 			{
-				Interval = 1000
+				Interval = 2000
 			};
 			_timer.Tick += timer_Tick;
 		}

@@ -4,8 +4,8 @@ using System.Diagnostics;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using CSCore.CoreAudioAPI;
 using Microsoft.Win32;
-using NAudio.CoreAudioApi;
 using SmartDevice.SmartDeviceProtocol;
 
 namespace SmartDevice
@@ -48,7 +48,7 @@ namespace SmartDevice
 			string defaultDeviceID = null;
 			try
 			{
-				defaultDeviceID = deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Capture, Role.Communications).ID;
+				defaultDeviceID = deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Capture, Role.Communications).DeviceID;
 			}
 			catch (Exception e)
 			{
@@ -63,7 +63,7 @@ namespace SmartDevice
 			string defaultDeviceID = null;
 			try
 			{
-				defaultDeviceID = deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Communications).ID;
+				defaultDeviceID = deviceEnumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Communications).DeviceID;
 			}
 			catch (Exception e)
 			{
@@ -142,7 +142,6 @@ namespace SmartDevice
 			}
 
 			var block = e.Block;
-			if (!block.ChecksumValid) return;
 
 			_blocks.Add(block);
 			ProcessBlock(block);

@@ -1,41 +1,55 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using NAudio.CoreAudioApi;
-using NAudio.Wave;
+using CSCore;
+using CSCore.CoreAudioAPI;
+using CSCore.SoundOut;
+using CSCore.Streams;
+using CSCore.Streams.SampleConverter;
 
 namespace SmartDevice.AudioFrequencyShiftKeying
 {
-	internal class Encoder : WaveProvider32
+	internal class Encoder : ISampleSource
 	{
 		public Encoder()
 		{
 			_queue = new Queue<byte>();
 		}
 
+		public bool CanSeek => false;
+
+		public WaveFormat WaveFormat => new WaveFormat(48000, 32, 1, AudioEncoding.IeeeFloat);
+
+		public long Position { get => 0; set => throw new InvalidOperationException(); }
+
+		public long Length => 0;
+
 		public void Start(string deviceID, float volume)
 		{
 			if (_audioOut != null) return;
 
 			var deviceEnumerator = new MMDeviceEnumerator();
-			var renderDevice = deviceEnumerator.EnumerateAudioEndPoints(DataFlow.Render, DeviceState.Active).FirstOrDefault(endpoint => endpoint.ID == deviceID);
-			if (renderDevice == null)
+			_renderDevice = deviceEnumerator.EnumAudioEndpoints(DataFlow.Render, DeviceState.Active).FirstOrDefault(endpoint => endpoint.DeviceID == deviceID);
+			if (_renderDevice == null)
 			{
 				throw new ArgumentException(@"The requested device ID could not be found.", nameof(deviceID));
 			}
 
-			SetWaveFormat(48000, 1);
-			var wave16Provider = new WaveFloatTo16Provider(this);
-			var stereoProvider = new MonoToStereoProvider16(wave16Provider);
-			if (!renderDevice.AudioClient.IsFormatSupported(AudioClientShareMode.Exclusive, stereoProvider.WaveFormat))
+			var monoToStereoSource = new MonoToStereoSource(this);
+			var sampleToPcm16 = new SampleToPcm16(monoToStereoSource);
+			var audioClient = AudioClient.FromMMDevice(_renderDevice);
+			if (!audioClient.IsFormatSupported(AudioClientShareMode.Exclusive, sampleToPcm16.WaveFormat))
 			{
 				throw new ArgumentException(@"The requested device does not support the required stream format.", nameof(deviceID));
 			}
 
-			_audioOut = new WasapiOut(renderDevice, AudioClientShareMode.Exclusive, true, 50);
-			_previousVolume = _audioOut.Volume;
-			_audioOut.Volume = volume;
-			_audioOut.Init(stereoProvider);
+			_audioOut = new WasapiOut(false, AudioClientShareMode.Exclusive, 50);
+
+			var audioEndpointVolume = AudioEndpointVolume.FromDevice(_renderDevice);
+			_previousVolume = audioEndpointVolume.MasterVolumeLevel;
+			audioEndpointVolume.MasterVolumeLevelScalar = volume;
+
+			_audioOut.Initialize(sampleToPcm16);
 			_audioOut.Play();
 		}
 
@@ -44,7 +58,7 @@ namespace SmartDevice.AudioFrequencyShiftKeying
 			if (_audioOut == null) return;
 
 			_audioOut.Stop();
-			_audioOut.Volume = _previousVolume;
+			AudioEndpointVolume.FromDevice(_renderDevice).MasterVolumeLevel = _previousVolume;
 			_audioOut.Dispose();
 			_audioOut = null;
 		}
@@ -57,7 +71,7 @@ namespace SmartDevice.AudioFrequencyShiftKeying
 			}
 		}
 
-		public override int Read(float[] buffer, int offset, int sampleCount)
+		public int Read(float[] buffer, int offset, int sampleCount)
 		{
 			var sampleRate = WaveFormat.SampleRate;
 			for (var n = 0; n < sampleCount; n++)
@@ -77,7 +91,12 @@ namespace SmartDevice.AudioFrequencyShiftKeying
 			return sampleCount;
 		}
 
+		public void Dispose()
+		{
+		}
+
 		private readonly Queue<byte> _queue;
+		private MMDevice _renderDevice;
 		private WasapiOut _audioOut;
 		private float _previousVolume;
 		private int _frequency;
