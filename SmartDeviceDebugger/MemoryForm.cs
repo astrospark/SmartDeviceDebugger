@@ -30,10 +30,6 @@ namespace SmartDevice
 			decoder1.BlockReceived += decoder_BlockReceived;
 		}
 
-		private void MemoryForm_Load(object sender, EventArgs e)
-		{
-		}
-
 		private void getAllButton_Click(object sender, EventArgs e)
 		{
 			if (_getActive) return;

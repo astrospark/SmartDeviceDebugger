@@ -92,7 +92,6 @@
 			this.Controls.Add(this.getAllButton);
 			this.Name = "MemoryForm";
 			this.Text = "Memory";
-			this.Load += new System.EventHandler(this.MemoryForm_Load);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 

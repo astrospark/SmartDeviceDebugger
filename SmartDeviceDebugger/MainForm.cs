@@ -300,6 +300,7 @@ namespace SmartDevice
 
 		private void ProcessBlock(Block block)
 		{
+			// ReSharper disable once SwitchStatementMissingSomeCases
 			switch (block.BlockType)
 			{
 				case 0x4F:
