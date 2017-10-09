@@ -77,6 +77,9 @@ namespace SmartDevice
 				Debug.WriteLine(e);
 			}
 			_outputDeviceID = Registry.GetValue(@"HKEY_CURRENT_USER\Software\Astrospark Technologies\Smart Device Debugger", @"Output Device ID", defaultDeviceID) as string;
+
+			var phaseInvertString = Registry.GetValue(@"HKEY_CURRENT_USER\Software\Astrospark Technologies\Smart Device Debugger", @"Phase Invert", "true") as string;
+			_afskEncoder.PhaseInvert = phaseInvertString != null && phaseInvertString != "false";
 		}
 
 		private void startStopButton_Click(object sender, EventArgs e)
@@ -112,16 +115,19 @@ namespace SmartDevice
 			var optionsForm = new OptionsForm
 			{
 				SelectedInputDeviceID = _inputDeviceID,
-				SelectedOutputDeviceID = _outputDeviceID
+				SelectedOutputDeviceID = _outputDeviceID,
+				PhaseInvert = _afskEncoder.PhaseInvert
 			};
 
 			if (optionsForm.ShowDialog(this) != DialogResult.OK) return;
 
 			_inputDeviceID = optionsForm.SelectedInputDeviceID;
 			_outputDeviceID = optionsForm.SelectedOutputDeviceID;
+			_afskEncoder.PhaseInvert = optionsForm.PhaseInvert;
 
 			Registry.SetValue(@"HKEY_CURRENT_USER\Software\Astrospark Technologies\Smart Device Debugger", @"Input Device ID", _inputDeviceID, RegistryValueKind.String);
 			Registry.SetValue(@"HKEY_CURRENT_USER\Software\Astrospark Technologies\Smart Device Debugger", @"Output Device ID", _outputDeviceID, RegistryValueKind.String);
+			Registry.SetValue(@"HKEY_CURRENT_USER\Software\Astrospark Technologies\Smart Device Debugger", @"Phase Invert", _afskEncoder.PhaseInvert ? "true" : "false", RegistryValueKind.String);
 		}
 
 		private void clearButton_Click(object sender, EventArgs e)

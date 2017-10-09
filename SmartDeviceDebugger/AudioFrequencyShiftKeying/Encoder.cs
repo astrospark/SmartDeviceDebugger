@@ -16,6 +16,8 @@ namespace SmartDevice.AudioFrequencyShiftKeying
 			_queue = new Queue<byte>();
 		}
 
+		public bool PhaseInvert { get; set; }
+
 		public bool CanSeek => false;
 
 		public WaveFormat WaveFormat => new WaveFormat(48000, 32, 1, AudioEncoding.IeeeFloat);
@@ -85,7 +87,7 @@ namespace SmartDevice.AudioFrequencyShiftKeying
 					_fullCycleSamples = sampleRate / _frequency;
 					_currentSample = 0;
 				}
-				buffer[n + offset] = (float) Math.Sin(2 * Math.PI * _currentSample * _frequency / sampleRate) * -1.0f;
+				buffer[n + offset] = (float) Math.Sin(2 * Math.PI * _currentSample * _frequency / sampleRate) * (PhaseInvert ? -1.0f : 1.0f);
 				_currentSample++;
 			}
 			return sampleCount;

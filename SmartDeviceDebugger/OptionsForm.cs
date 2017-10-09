@@ -26,6 +26,12 @@ namespace SmartDevice
 			set => outputDeviceComboBox.SelectedValue = value;
 		}
 
+		public bool PhaseInvert
+		{
+			get => phaseInvertCheckBox.Checked;
+			set => phaseInvertCheckBox.Checked = value;
+		}
+
 		private void PopulateInputDevices()
 		{
 			var deviceEnumerator = new MMDeviceEnumerator();
