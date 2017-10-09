@@ -20,6 +20,13 @@ namespace SmartDevice
 
 			_blocks = new List<Block>();
 
+			var keepAliveTimer = new Timer()
+			{
+				Interval = 30000
+			};
+			keepAliveTimer.Tick += keepAliveTimer_Tick;
+			keepAliveTimer.Start();
+
 			// Input
 			_afskDecoder = new AudioFrequencyShiftKeying.Decoder();
 			_smartDeviceProtocolDecoder = new SmartDeviceProtocol.Decoder(_afskDecoder);
@@ -80,6 +87,7 @@ namespace SmartDevice
 				// ReSharper disable once LocalizableElement
 				startStopButton.Text = "&Stop";
 				optionsButton.Enabled = false;
+				keepAliveCheckBox.Enabled = true;
 				variablesButton.Enabled = true;
 				commandTextBox.Enabled = true;
 				sendButton.Enabled = true;
@@ -91,6 +99,7 @@ namespace SmartDevice
 				// ReSharper disable once LocalizableElement
 				startStopButton.Text = "&Start";
 				optionsButton.Enabled = true;
+				keepAliveCheckBox.Enabled = false;
 				variablesButton.Enabled = false;
 				commandTextBox.Enabled = false;
 				sendButton.Enabled = false;
@@ -421,6 +430,15 @@ namespace SmartDevice
 			_smartDeviceProtocolEncoder.Send(block);
 
 			commandTextBox.SelectAll();
+		}
+
+		private void keepAliveTimer_Tick(object sender, EventArgs e)
+		{
+			if (!_started || !keepAliveCheckBox.Checked || _smartDeviceProtocolEncoder == null) return;
+			var block = new Block(0xC0); // WRITE-VARIABLE
+			block.Data.Add(0x22); // DeadMan Timer Minutes
+			block.Data.Add(0x00);
+			_smartDeviceProtocolEncoder.Send(block);
 		}
 
 		private readonly List<Block> _blocks;

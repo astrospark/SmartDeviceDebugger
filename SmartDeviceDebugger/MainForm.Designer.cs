@@ -54,6 +54,7 @@
 			this.commandTextBox = new System.Windows.Forms.TextBox();
 			this.sendButton = new System.Windows.Forms.Button();
 			this.filterGroupBox = new System.Windows.Forms.GroupBox();
+			this.keepAliveCheckBox = new System.Windows.Forms.CheckBox();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
 			this.splitContainer.Panel1.SuspendLayout();
 			this.splitContainer.Panel2.SuspendLayout();
@@ -262,7 +263,7 @@
 			this.variablesButton.Location = new System.Drawing.Point(474, 12);
 			this.variablesButton.Name = "variablesButton";
 			this.variablesButton.Size = new System.Drawing.Size(75, 25);
-			this.variablesButton.TabIndex = 2;
+			this.variablesButton.TabIndex = 3;
 			this.variablesButton.Text = "&Variables";
 			this.variablesButton.UseVisualStyleBackColor = true;
 			this.variablesButton.Click += new System.EventHandler(this.variablesButton_Click);
@@ -318,11 +319,26 @@
 			this.filterGroupBox.TabStop = false;
 			this.filterGroupBox.Text = "&Filter Block Types";
 			// 
+			// keepAliveCheckBox
+			// 
+			this.keepAliveCheckBox.Appearance = System.Windows.Forms.Appearance.Button;
+			this.keepAliveCheckBox.Checked = true;
+			this.keepAliveCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.keepAliveCheckBox.Enabled = false;
+			this.keepAliveCheckBox.Location = new System.Drawing.Point(174, 12);
+			this.keepAliveCheckBox.Name = "keepAliveCheckBox";
+			this.keepAliveCheckBox.Size = new System.Drawing.Size(75, 25);
+			this.keepAliveCheckBox.TabIndex = 2;
+			this.keepAliveCheckBox.Text = "Keep Alive";
+			this.keepAliveCheckBox.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			this.keepAliveCheckBox.UseVisualStyleBackColor = true;
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(723, 479);
+			this.Controls.Add(this.keepAliveCheckBox);
 			this.Controls.Add(this.filterGroupBox);
 			this.Controls.Add(this.sendButton);
 			this.Controls.Add(this.commandTextBox);
@@ -376,6 +392,7 @@
 		private System.Windows.Forms.TextBox commandTextBox;
 		private System.Windows.Forms.Button sendButton;
 		private System.Windows.Forms.GroupBox filterGroupBox;
+		private System.Windows.Forms.CheckBox keepAliveCheckBox;
 	}
 }
 
