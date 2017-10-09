@@ -91,6 +91,7 @@ namespace SmartDevice
 				startStopButton.Text = "&Stop";
 				optionsButton.Enabled = false;
 				keepAliveCheckBox.Enabled = true;
+				memoryButton.Enabled = true;
 				variablesButton.Enabled = true;
 				commandTextBox.Enabled = true;
 				sendButton.Enabled = true;
@@ -103,6 +104,7 @@ namespace SmartDevice
 				startStopButton.Text = "&Start";
 				optionsButton.Enabled = true;
 				keepAliveCheckBox.Enabled = false;
+				memoryButton.Enabled = false;
 				variablesButton.Enabled = false;
 				commandTextBox.Enabled = false;
 				sendButton.Enabled = false;
@@ -312,6 +314,12 @@ namespace SmartDevice
 					}
 					break;
 			}
+		}
+
+		private void memoryButton_Click(object sender, EventArgs e)
+		{
+			var memoryForm = new MemoryForm(_smartDeviceProtocolEncoder, _smartDeviceProtocolDecoder);
+			memoryForm.Show(this);
 		}
 
 		private void variablesButton_Click(object sender, EventArgs e)

@@ -19,7 +19,7 @@ namespace SmartDevice.SmartDeviceProtocol
 
 		public EventHandler<BlockReceivedEventArgs> BlockReceived;
 
-		private void afsk_DataReceived(object sender, DataReceivedEventArgs e)
+		private void afsk_DataReceived(object sender, AudioFrequencyShiftKeying.DataReceivedEventArgs e)
 		{
 			foreach (var bit in e.Data)
 			{

@@ -55,6 +55,7 @@
 			this.sendButton = new System.Windows.Forms.Button();
 			this.filterGroupBox = new System.Windows.Forms.GroupBox();
 			this.keepAliveCheckBox = new System.Windows.Forms.CheckBox();
+			this.memoryButton = new System.Windows.Forms.Button();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
 			this.splitContainer.Panel1.SuspendLayout();
 			this.splitContainer.Panel2.SuspendLayout();
@@ -333,11 +334,24 @@
 			this.keepAliveCheckBox.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 			this.keepAliveCheckBox.UseVisualStyleBackColor = true;
 			// 
+			// memoryButton
+			// 
+			this.memoryButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.memoryButton.Enabled = false;
+			this.memoryButton.Location = new System.Drawing.Point(393, 12);
+			this.memoryButton.Name = "memoryButton";
+			this.memoryButton.Size = new System.Drawing.Size(75, 25);
+			this.memoryButton.TabIndex = 9;
+			this.memoryButton.Text = "&Memory";
+			this.memoryButton.UseVisualStyleBackColor = true;
+			this.memoryButton.Click += new System.EventHandler(this.memoryButton_Click);
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(723, 479);
+			this.Controls.Add(this.memoryButton);
 			this.Controls.Add(this.keepAliveCheckBox);
 			this.Controls.Add(this.filterGroupBox);
 			this.Controls.Add(this.sendButton);
@@ -393,6 +407,7 @@
 		private System.Windows.Forms.Button sendButton;
 		private System.Windows.Forms.GroupBox filterGroupBox;
 		private System.Windows.Forms.CheckBox keepAliveCheckBox;
+		private System.Windows.Forms.Button memoryButton;
 	}
 }
 
