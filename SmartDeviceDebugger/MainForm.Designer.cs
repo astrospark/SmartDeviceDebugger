@@ -105,7 +105,7 @@
 			this.splitContainer.Panel2.Controls.Add(this.detailsTextBox);
 			this.splitContainer.Size = new System.Drawing.Size(723, 311);
 			this.splitContainer.SplitterDistance = 182;
-			this.splitContainer.TabIndex = 6;
+			this.splitContainer.TabIndex = 8;
 			// 
 			// blocksListView
 			// 
@@ -291,7 +291,7 @@
 			this.commandTextBox.Location = new System.Drawing.Point(12, 444);
 			this.commandTextBox.Name = "commandTextBox";
 			this.commandTextBox.Size = new System.Drawing.Size(618, 23);
-			this.commandTextBox.TabIndex = 8;
+			this.commandTextBox.TabIndex = 9;
 			this.commandTextBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.commandTextBox_KeyPress);
 			this.commandTextBox.Leave += new System.EventHandler(this.commandTextBox_Leave);
 			// 
@@ -302,7 +302,7 @@
 			this.sendButton.Location = new System.Drawing.Point(636, 443);
 			this.sendButton.Name = "sendButton";
 			this.sendButton.Size = new System.Drawing.Size(75, 25);
-			this.sendButton.TabIndex = 9;
+			this.sendButton.TabIndex = 10;
 			this.sendButton.Text = "&Send";
 			this.sendButton.UseVisualStyleBackColor = true;
 			this.sendButton.Click += new System.EventHandler(this.sendButton_Click);
