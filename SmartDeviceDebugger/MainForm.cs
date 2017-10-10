@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
@@ -17,6 +18,9 @@ namespace SmartDevice
 			InitializeComponent();
 
 			Registry.CurrentUser.CreateSubKey(@"Software\Astrospark Technologies\Smart Device Debugger");
+
+			var doubleBufferPropertyInfo = blocksListView.GetType().GetProperty("DoubleBuffered", BindingFlags.Instance | BindingFlags.NonPublic);
+			doubleBufferPropertyInfo?.SetValue(blocksListView, true, null);
 
 			_blocks = new List<Block>();
 			_filteredBlocks = new List<Block>();
