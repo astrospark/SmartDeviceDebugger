@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Text;
 using System.Windows.Forms;
 using SmartDevice.SmartDeviceProtocol;
@@ -61,7 +60,6 @@ namespace SmartDevice
 
 		private void timer_Tick(object sender, EventArgs e)
 		{
-			Debug.WriteLine("timer_Tick()");
 			Get();
 		}
 
@@ -136,7 +134,7 @@ namespace SmartDevice
 
 			if (_getLocation % 0x10 == 0)
 			{
-				stringBuilder.Append($"{bank:X1}:{location:X2} ");
+				stringBuilder.Append($"{bank:X1}{location:X2} ");
 			}
 			else
 			{
