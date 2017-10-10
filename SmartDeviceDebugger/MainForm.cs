@@ -19,8 +19,9 @@ namespace SmartDevice
 			Registry.CurrentUser.CreateSubKey(@"Software\Astrospark Technologies\Smart Device Debugger");
 
 			_blocks = new List<Block>();
+			_filteredBlocks = new List<Block>();
 
-			var keepAliveTimer = new Timer()
+			var keepAliveTimer = new Timer
 			{
 				Interval = 30000
 			};
@@ -135,7 +136,8 @@ namespace SmartDevice
 		private void clearButton_Click(object sender, EventArgs e)
 		{
 			_blocks.Clear();
-			blocksListView.Items.Clear();
+			_filteredBlocks.Clear();
+			blocksListView.VirtualListSize = 0;
 		}
 
 		private void smartDeviceProtocolEncoder_BlockSent(object sender, BlockSentEventArgs e)
@@ -146,8 +148,7 @@ namespace SmartDevice
 				return;
 			}
 
-			_blocks.Add(e.Block);
-			ApplyFilters();
+			AddBlock(e.Block);
 		}
 
 		private void smartDeviceProtocolDecoder_BlockReceived(object sender, BlockReceivedEventArgs e)
@@ -158,21 +159,45 @@ namespace SmartDevice
 				return;
 			}
 
-			var block = e.Block;
-
-			_blocks.Add(block);
-			ProcessBlock(block);
-			ApplyFilters();
+			AddBlock(e.Block);
 		}
 
 		private void AddBlock(Block block)
 		{
+			_blocks.Add(block);
+			if (FilterBlock(block))
+			{
+				_filteredBlocks.Add(block);
+				blocksListView.VirtualListSize++;
+				if (autoScrollCheckBox.Checked && blocksListView.Items.Count > 0)
+				{
+					var index = blocksListView.Items.Count - 1;
+					blocksListView.EnsureVisible(index);
+					//blocksListView.Items[index].Selected = true;
+				}
+			}
+			ProcessBlock(block);
+		}
+
+		private void filterTextBox_Leave(object sender, EventArgs e)
+		{
+			includeTextBox.Text = SanitizeHex(includeTextBox.Text, true);
+			excludeTextBox.Text = SanitizeHex(excludeTextBox.Text, true);
+			ApplyFilters();
+		}
+
+		private void blocksListView_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
+		{
+			var block = _filteredBlocks[e.ItemIndex];
+
 			var blockType = $"{block.BlockType:X2}";
 			var name = BlockTypeName.Get(block.BlockType);
 			if (name != null) blockType = $"{name} ({blockType})";
 
-			var item = blocksListView.Items.Add(blockType);
-			item.Tag = block;
+			var item = new ListViewItem
+			{
+				Text = blockType
+			};
 
 			var data = new List<string>();
 			// ReSharper disable once LoopCanBeConvertedToQuery
@@ -184,13 +209,8 @@ namespace SmartDevice
 
 			var checksumFlag = block.ChecksumValid ? "" : "!";
 			item.SubItems.Add($"{block.Checksum:X2}{checksumFlag}");
-		}
 
-		private void filterTextBox_Leave(object sender, EventArgs e)
-		{
-			includeTextBox.Text = SanitizeHex(includeTextBox.Text, true);
-			excludeTextBox.Text = SanitizeHex(excludeTextBox.Text, true);
-			ApplyFilters();
+			e.Item = item;
 		}
 
 		private void blocksListView_SelectedIndexChanged(object sender, EventArgs e)
@@ -219,17 +239,17 @@ namespace SmartDevice
 
 		private Block GetSelectedBlock()
 		{
-			ListViewItem item = null;
-			if (blocksListView.SelectedItems.Count == 1) item = blocksListView.SelectedItems[0];
-			return item?.Tag as Block;
+			if (blocksListView.SelectedIndices.Count != 1) return null;
+			var index = blocksListView.SelectedIndices[0];
+			return index < _filteredBlocks.Count ? _filteredBlocks[index] : null;
 		}
 
 		private IEnumerable<Block> GetSelectedBlocks()
 		{
 			var blocks = new List<Block>();
-			foreach (ListViewItem item in blocksListView.SelectedItems)
+			foreach (int index in blocksListView.SelectedIndices)
 			{
-				if (item.Tag is Block block) blocks.Add(block);
+				if (index < _filteredBlocks.Count) blocks.Add(_filteredBlocks[index]);
 			}
 			return blocks;
 		}
@@ -270,11 +290,11 @@ namespace SmartDevice
 
 		private void ApplyFilters()
 		{
-			blocksListView.BeginUpdate();
-			blocksListView.Items.Clear();
-
 			var includeFilter = ParseHex(includeTextBox.Text);
 			var excludeFilter = ParseHex(excludeTextBox.Text);
+
+			_filteredBlocks.Clear();
+			blocksListView.VirtualListSize = 0;
 
 			foreach (var block in _blocks)
 			{
@@ -284,18 +304,21 @@ namespace SmartDevice
 				     includeFilter.Contains(blockType)) &&
 				    !excludeFilter.Contains(blockType))
 				{
-					AddBlock(block);
+					_filteredBlocks.Add(block);
+					blocksListView.VirtualListSize++;
 				}
 			}
+		}
 
-			if (autoScrollCheckBox.Checked && blocksListView.Items.Count > 0)
-			{
-				var index = blocksListView.Items.Count - 1;
-				blocksListView.EnsureVisible(index);
-				blocksListView.Items[index].Selected = true;
-			}
+		private bool FilterBlock(Block block)
+		{
+			var includeFilter = ParseHex(includeTextBox.Text);
+			var excludeFilter = ParseHex(excludeTextBox.Text);
+			var blockType = block.BlockType;
 
-			blocksListView.EndUpdate();
+			return (includeFilter.Count == 0 ||
+			        includeFilter.Contains(blockType)) &&
+			       !excludeFilter.Contains(blockType);
 		}
 
 		private void ProcessBlock(Block block)
@@ -400,7 +423,7 @@ namespace SmartDevice
 				includeTextBox.Text += $" {block.BlockType:X2}";
 				count++;
 			}
-			if (count>0) ApplyFilters();
+			if (count > 0) ApplyFilters();
 		}
 
 		private void excludeBlockTypeToolStripMenuItem_Click(object sender, EventArgs e)
@@ -459,6 +482,7 @@ namespace SmartDevice
 		}
 
 		private readonly List<Block> _blocks;
+		private readonly List<Block> _filteredBlocks;
 		private bool _started;
 		private MemoryForm _memoryForm;
 		private VariablesForm _variablesForm;

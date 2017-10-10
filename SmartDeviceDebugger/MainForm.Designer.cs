@@ -123,6 +123,8 @@
 			this.blocksListView.TabIndex = 0;
 			this.blocksListView.UseCompatibleStateImageBehavior = false;
 			this.blocksListView.View = System.Windows.Forms.View.Details;
+			this.blocksListView.VirtualMode = true;
+			this.blocksListView.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.blocksListView_RetrieveVirtualItem);
 			this.blocksListView.SelectedIndexChanged += new System.EventHandler(this.blocksListView_SelectedIndexChanged);
 			// 
 			// blockTypeColumnHeader
